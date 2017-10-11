@@ -24,7 +24,17 @@
             <player-table :headings="headings" :rows="formatted_query_results" :compare-list="compare_list"
                 @toggleComparedPlayer="handleToggleComparedPlayer"></player-table>
 
-            <p>Showing {{ formatted_query_results.length }} of {{ query_results.length }}.</p>
+            <div id="Pagination">
+                <button type="button" :disabled="query_page < 1"
+                    @click="query_page -= 1">Prev</button>
+                &nbsp;|&nbsp;
+                <button type="button" :disabled="(query_page * 100 + 100) >= query_results.length"
+                    @click="query_page += 1">Next</button>
+            </div>
+
+            <p>Showing {{ (query_page * 100) }}-{{ (query_page * 100) + formatted_query_results.length }} of {{ query_results.length }}.</p>
+
+            <p>Stats provided by the lovely <a href="https://www.pro-football-reference.com/" target="_blank">Pro Football Reference</a>.</p>
         </div>
     </div>
 </template>
@@ -49,6 +59,7 @@
                 compare_list: [],
                 debounced_query_player: debounce(this.searchForPlayer, 300),
                 headings: [],
+                query_page: 0,
                 player_query: '',
                 query_results: [],
                 show_compared_players: false,
@@ -81,9 +92,7 @@
                     out = out.filter(row => this.compare_list.indexOf(row.id) !== -1)
                 }
 
-                out.splice(100)
-
-                return out
+                return out.slice(this.query_page * 100, ((this.query_page + 1) * 100))
             }
         },
 
@@ -221,6 +230,11 @@
         -webkit-font-smoothing: antialiased;
         color: #444;
         font-family: 'Nunito', Helvetica, Arial, sans-serif;
+    }
+
+    #Pagination {
+        margin: 20px 0 0;
+        text-align: center;
     }
 
     #PlayerSearch {

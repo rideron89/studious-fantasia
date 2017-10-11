@@ -23,27 +23,21 @@
 </template>
 
 <script>
-    import PlayerModal from './PlayerModal.vue'
-
     export default {
         name: 'player-table',
 
-        components: {
-            PlayerModal
-        },
-
         props: ['compareList', 'headings', 'rows'],
-
-        computed: {
-            encoded_headings: function() {
-                return this.headings.map(heading => heading.replace(' ', '<br />'))
-            }
-        },
 
         data () {
             return {
                 selected_row: {},
                 show_modal: false
+            }
+        },
+
+        computed: {
+            encoded_headings: function() {
+                return this.headings.map(heading => heading.replace(' ', '<br />'))
             }
         },
 
@@ -77,6 +71,7 @@
 
     .playerTable--head {
         border-bottom: 2px solid #c0c0c0;
+        vertical-align: bottom;
     }
 
     .playerTable--row {
