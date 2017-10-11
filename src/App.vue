@@ -1,9 +1,7 @@
 <template>
     <div id="app">
-        <div id="title">
-            <img src="./assets/logo.png">
-
-            <h1>asdf</h1>
+        <div id="Title">
+            <h1>Studious Fantasia</h1>
         </div>
 
         <div class="container">
@@ -230,6 +228,7 @@
         -webkit-font-smoothing: antialiased;
         color: #444;
         font-family: 'Nunito', Helvetica, Arial, sans-serif;
+        padding: 20px 0;
     }
 
     #Pagination {
@@ -241,7 +240,7 @@
         margin: 0 0 30px;
     }
 
-    #title {
+    #Title {
         text-align: center;
     }
 
