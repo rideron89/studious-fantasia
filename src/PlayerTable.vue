@@ -36,8 +36,11 @@
         },
 
         computed: {
-            encoded_headings: function() {
-                return this.headings.map(heading => heading.replace(' ', '<br />'))
+            encoded_headings: {
+                cache: false,
+                get () {
+                    return this.headings.map(heading => heading.replace(' ', '<br />'))
+                }
             }
         },
 
@@ -69,6 +72,10 @@
         width: 100%;
     }
 
+    .playerTable--wrapper {
+        overflow: auto;
+    }
+
     .playerTable--head {
         border-bottom: 2px solid #c0c0c0;
         vertical-align: bottom;
@@ -89,6 +96,7 @@
 
     .playerTable--cell {
         height: 50px;
+        min-width: 60px;
     }
 
     .playerTable--cell.center {

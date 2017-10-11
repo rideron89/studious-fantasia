@@ -1,23 +1,23 @@
 <template>
     <div id="app">
-        <div id="Title">
+        <section id="Title">
             <h1>Studious Fantasia</h1>
-        </div>
+        </section>
 
-        <div class="container">
-            <div id="PlayerSearch" class="inputGroup">
-                <label class="inputGroup--label">Search Players:</label>
-                <input class="inputGroup--input" type="search" v-model="player_query" @input="debounced_query_player" />
-            </div>
+        <section id="PlayerSearch" class="inputGroup">
+            <label class="inputGroup--label">Search Players:</label>
+            <input class="inputGroup--input" type="search" v-model="player_query" @input="debounced_query_player" />
+        </section>
 
-            <section v-if="show_compared_players || compare_list.length">
+        <section id="Table">
+            <div v-if="show_compared_players || compare_list.length">
                 <br /><br />
 
                 <button type="button" v-if="show_compared_players || compare_list.length"
                     @click="show_compared_players = !show_compared_players">{{ show_compared_players ? 'Hide' : 'Show' }} Player Comparisons</button>
 
                 <br /><br />
-            </section>
+            </div>
 
             <player-table :headings="headings" :rows="formatted_query_results" :compare-list="compare_list"
                 @toggleComparedPlayer="handleToggleComparedPlayer"></player-table>
@@ -33,7 +33,7 @@
             <p>Showing {{ (query_page * 100) }}-{{ (query_page * 100) + formatted_query_results.length }} of {{ query_results.length }}.</p>
 
             <p>Stats provided by the lovely <a href="https://www.pro-football-reference.com/" target="_blank">Pro Football Reference</a>.</p>
-        </div>
+        </section>
     </div>
 </template>
 
@@ -175,7 +175,6 @@
 
     body {
         margin: 0;
-        padding: 15px;
     }
 
     fieldset {
@@ -227,8 +226,13 @@
         -moz-osx-font-smoothing: grayscale;
         -webkit-font-smoothing: antialiased;
         color: #444;
+        display: flex;
+        flex-direction: column;
         font-family: 'Nunito', Helvetica, Arial, sans-serif;
-        padding: 20px 0;
+        height: 100vh;
+        margin: 0 auto;
+        max-width: 1100px;
+        overflow: hidden;
     }
 
     #Pagination {
@@ -237,16 +241,24 @@
     }
 
     #PlayerSearch {
-        margin: 0 0 30px;
+        flex: 60px 0 0;
+        margin: 0;
+        padding: 0 15px 20px;
+    }
+
+    #Table {
+        overflow: auto;
     }
 
     #Title {
+        display: flex;
+        align-items: center;
+        flex: 70px 0 0;
         text-align: center;
     }
 
-    .container {
+    #Title h1 {
         margin: 0 auto;
-        max-width: 1100px;
     }
 
     .inputGroup {
