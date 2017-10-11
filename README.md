@@ -1,6 +1,6 @@
-# fantasy-helper
+# studious-fantasia
 
-> A Vue.js project
+> VueJs app to help research fantasy football players.
 
 ## Build Setup
 
