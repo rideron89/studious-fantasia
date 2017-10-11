@@ -7,30 +7,24 @@
         </div>
 
         <div class="container">
-            <label>
-                <span>Google Sheets Published URL</span>
-                <br />
-                <input type="text" v-model="sheets_url" />
-            </label>
+            <div id="PlayerSearch" class="inputGroup">
+                <label class="inputGroup--label">Search Players:</label>
+                <input class="inputGroup--input" type="search" v-model="player_query" @input="debounced_query_player" />
+            </div>
 
-            <hr />
+            <section v-if="show_compared_players || compare_list.length">
+                <br /><br />
 
-            <label>
-                <span>Player Name</span>
-                <br />
-                <input type="text" v-model="player_query" @input="debounced_query_player" />
-            </label>
+                <button type="button" v-if="show_compared_players || compare_list.length"
+                    @click="show_compared_players = !show_compared_players">{{ show_compared_players ? 'Hide' : 'Show' }} Player Comparisons</button>
 
-            <hr />
+                <br /><br />
+            </section>
 
-            <button type="button" v-if="show_compared_players || compare_list.length"
-                @click="show_compared_players = !show_compared_players">{{ show_compared_players ? 'Hide' : 'Show' }} Player Comparisons</button>
+            <player-table :headings="headings" :rows="formatted_query_results" :compare-list="compare_list"
+                @toggleComparedPlayer="handleToggleComparedPlayer"></player-table>
 
-            <br /><br />
-
-            <player-table :headings="headings" :rows="formatted_query_results"
-                @addComparedPlayer="handleAddComparedPlayer"
-                @removeComparedPlayer="handleRemoveComparedPlayer"></player-table>
+            <p>Showing {{ formatted_query_results.length }} of {{ query_results.length }}.</p>
         </div>
     </div>
 </template>
@@ -98,17 +92,15 @@
         },
 
         methods: {
-            handleAddComparedPlayer: function(player_id) {
+            handleToggleComparedPlayer: function(player_id) {
                 if (this.compare_list.indexOf(player_id) === -1) {
                     this.compare_list.push(player_id)
-                }
-            },
+                } else {
+                    this.compare_list = this.compare_list.filter(p => p !== player_id)
 
-            handleRemoveComparedPlayer: function(player_id) {
-                this.compare_list = this.compare_list.filter(p => p !== player_id)
-
-                if (this.compare_list.length < 1) {
-                    this.show_compared_players = false
+                    if (this.compare_list.length < 1) {
+                        this.show_compared_players = false
+                    }
                 }
             },
 
@@ -164,7 +156,7 @@
 </script>
 
 <style>
-    @import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
+    @import url('https://fonts.googleapis.com/css?family=Nunito:600,800');
 
     *, *:after, *:before {
         box-sizing: border-box;
@@ -179,6 +171,12 @@
         padding: 15px;
     }
 
+    fieldset {
+        border: 0;
+        margin: 0;
+        padding: 0;
+    }
+
     h1, h2, h3, h4, h5 {
         margin: 0 auto 20px;
     }
@@ -190,11 +188,17 @@
     }
 
     input, select, textarea {
-        border-radius: 2px;
-        border: 1px solid #b0b0b0;
+        border: 0;
+        border-bottom: 3px solid #c0c0c0;
         font: inherit;
         padding: 6px;
+        transition: all 0.15s ease;
         width: 100%;
+    }
+
+    input:focus {
+        border-color: #add9f1;
+        outline: 0;
     }
 
     input[type="checkbox"] {
@@ -215,8 +219,12 @@
     #app {
         -moz-osx-font-smoothing: grayscale;
         -webkit-font-smoothing: antialiased;
-        color: #2c3e50;
+        color: #444;
         font-family: 'Nunito', Helvetica, Arial, sans-serif;
+    }
+
+    #PlayerSearch {
+        margin: 0 0 30px;
     }
 
     #title {
@@ -226,5 +234,21 @@
     .container {
         margin: 0 auto;
         max-width: 1100px;
+    }
+
+    .inputGroup {
+        align-items: center;
+        display: flex;
+        margin: 0 0 20px;
+    }
+
+    .inputGroup--label {
+        flex: 0 0 auto;
+        margin: 0;
+        padding-right: 25px;
+    }
+
+    .inputGroup--input {
+        flex: 1;
     }
 </style>

@@ -3,19 +3,17 @@
         <table class="playerTable">
             <thead class="playerTable--head">
                 <tr>
-                    <th><!-- Empty for checkbox input --></th>
-                    <th v-for="(column, index) in headings" :key="index">{{ column }}</th>
+                    <th v-for="(column, index) in encoded_headings" v-html="column" :key="index"></th>
                 </tr>
             </thead>
             <tbody class="playerTable--body">
-                <tr class="playerTable--row" v-for="(row, index) in rows" :key="index">
-                    <td>
-                        <input type="checkbox" :value="row.id" @change="handleSelectRow" />
-                    </td>
+                <tr class="playerTable--row" v-for="(row, index) in rows" :key="index"
+                    :class="{ 'selected': compareList.indexOf(row.id) !== -1 }"
+                    @click="handleRowClick(row.id)">
                     <td class="playerTable--cell" v-for="(column, column_index) in headings"
                         :key="column_index"
                         :data-row-index="index"
-                        :class="{ 'center': column != 'Name' }">{{ row[column] }}</td>
+                        :class="{ 'center': column != 'Name', 'faded': row[column] == 0 }">{{ row[column] }}</td>
                 </tr>
             </tbody>
         </table>
@@ -34,7 +32,13 @@
             PlayerModal
         },
 
-        props: ['headings', 'rows'],
+        props: ['compareList', 'headings', 'rows'],
+
+        computed: {
+            encoded_headings: function() {
+                return this.headings.map(heading => heading.replace(' ', '<br />'))
+            }
+        },
 
         data () {
             return {
@@ -58,14 +62,8 @@
                 this.selected_row = {}
             },
 
-            handleSelectRow: function(ev) {
-                let selected = ev.target.checked
-
-                if (selected) {
-                    this.$emit('addComparedPlayer', ev.target.value)
-                } else {
-                    this.$emit('removeComparedPlayer', ev.target.value)
-                }
+            handleRowClick: function(player_id) {
+                this.$emit('toggleComparedPlayer', player_id)
             }
         }
     }
@@ -78,7 +76,7 @@
     }
 
     .playerTable--head {
-        border-bottom: 1px solid #c0c0c0;
+        border-bottom: 2px solid #c0c0c0;
     }
 
     .playerTable--row {
@@ -89,6 +87,11 @@
         background: #eaf5fb;
     }
 
+    .playerTable--row.selected {
+        background: #b6f591;
+        border-color: #9fd67f;
+    }
+
     .playerTable--cell {
         height: 50px;
     }
@@ -97,7 +100,11 @@
         text-align: center;
     }
 
-    .playerTable--cell:nth-child(2) {
-        padding-right: 25px;
+    .playerTable--cell.faded {
+        opacity: 0.55;
+    }
+
+    .playerTable--cell:nth-child(1) {
+        padding: 0 10px;
     }
 </style>
