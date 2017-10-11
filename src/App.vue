@@ -4,20 +4,17 @@
             <h1>Studious Fantasia</h1>
         </section>
 
-        <section id="PlayerSearch" class="inputGroup">
-            <label class="inputGroup--label">Search Players:</label>
-            <input class="inputGroup--input" type="search" v-model="player_query" @input="debounced_query_player" />
+        <section id="PlayerSearch">
+            <div class="inputGroup">
+                <label class="inputGroup--label">Search Players:</label>
+                <input class="inputGroup--input" type="search" v-model="player_query" @input="debounced_query_player" />
+            </div>
+
+            <button type="button" :disabled="compare_list.length < 1"
+                @click="show_compared_players = !show_compared_players">{{ show_compared_players ? 'Hide' : 'Show' }} Player Comparisons</button>
         </section>
 
         <section id="Table">
-            <div v-if="show_compared_players || compare_list.length">
-                <br /><br />
-
-                <button type="button" v-if="show_compared_players || compare_list.length"
-                    @click="show_compared_players = !show_compared_players">{{ show_compared_players ? 'Hide' : 'Show' }} Player Comparisons</button>
-
-                <br /><br />
-            </div>
 
             <player-table :headings="headings" :rows="formatted_query_results" :compare-list="compare_list"
                 @toggleComparedPlayer="handleToggleComparedPlayer"></player-table>
