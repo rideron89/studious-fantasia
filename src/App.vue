@@ -23,19 +23,14 @@
 
             <hr />
 
-            <table v-if="formatted_query_results.length">
-                <thead>
-                    <tr>
-                        <th v-for="(column, index) in headings" :key="index">{{ column }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(row, index) in formatted_query_results" :key="index">
-                        <td v-for="(column, column_index) in headings" :key="column_index"
-                            :class="{ 'center': column != 'Name' }">{{ row[column] }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <button type="button" v-if="show_compared_players || compare_list.length"
+                @click="show_compared_players = !show_compared_players">{{ show_compared_players ? 'Hide' : 'Show' }} Player Comparisons</button>
+
+            <br /><br />
+
+            <player-table :headings="headings" :rows="formatted_query_results"
+                @addComparedPlayer="handleAddComparedPlayer"
+                @removeComparedPlayer="handleRemoveComparedPlayer"></player-table>
         </div>
     </div>
 </template>
@@ -44,26 +39,41 @@
     import axios from 'axios'
     import debounce from 'lodash.debounce'
 
+    import PlayerModal from './PlayerModal.vue'
+    import PlayerTable from './PlayerTable.vue'
+
     export default {
         name: 'app',
 
+        components: {
+            PlayerModal,
+            PlayerTable
+        },
+
         data () {
             return {
+                compare_list: [],
                 debounced_query_player: debounce(this.searchForPlayer, 300),
                 headings: [],
-                player_query: 'will',
+                player_query: '',
                 query_results: [],
+                show_compared_players: false,
                 sheets_url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTB4kT0ZieKcXJXRdB1WeZBL2izq32MKu_Jvg5lGODqWlm1zzDGxOarnXXmEGnZvoRj3eNWecAyh8IN/pub?gid=0&single=true&output=csv'
             }
         },
 
         computed: {
+            compared_query_results: function() {
+                return this.formatted_query_results.filter(row => this.compare_list.indexOf(row.id) !== -1)
+            },
+
             formatted_query_results: function() {
-                return this.query_results.map(row => {
+                let out = this.query_results.map(row => {
                     let obj = {}
 
                     this.headings.map((heading, index) => {
                         if (heading === 'Name') {
+                            obj.id = row[index]
                             obj[heading] = row[index].replace(/\\\S+$/, '')
                         } else {
                             obj[heading] = row[index]
@@ -72,6 +82,14 @@
 
                     return obj
                 })
+
+                if (this.show_compared_players) {
+                    out = out.filter(row => this.compare_list.indexOf(row.id) !== -1)
+                }
+
+                out.splice(100)
+
+                return out
             }
         },
 
@@ -80,6 +98,20 @@
         },
 
         methods: {
+            handleAddComparedPlayer: function(player_id) {
+                if (this.compare_list.indexOf(player_id) === -1) {
+                    this.compare_list.push(player_id)
+                }
+            },
+
+            handleRemoveComparedPlayer: function(player_id) {
+                this.compare_list = this.compare_list.filter(p => p !== player_id)
+
+                if (this.compare_list.length < 1) {
+                    this.show_compared_players = false
+                }
+            },
+
             searchForPlayer: function() {
                 // only get player names with no numbers and at least 3 characters
                 if (/^[\sa-z]*$/.test(this.player_query) === false) {
@@ -100,6 +132,15 @@
 
                             return r.split(',')[0].toLowerCase().indexOf(this.player_query.toLowerCase()) !== -1
                         })
+                    } else {
+                        rows.map((r, index) => {
+                            if (index < 2) {
+                                headings.push(r)
+                            }
+                        })
+
+                        rows.shift()
+                        rows.shift()
                     }
 
                     if (this.headings.length === 0) {
@@ -115,7 +156,7 @@
                         })
                     }
 
-                    this.query_results = rows.map(row => row.split(','))
+                    this.query_results = rows.map(row => row.replace(/\r/g, '').split(','))
                 })
             }
         }
@@ -156,41 +197,19 @@
         width: 100%;
     }
 
+    input[type="checkbox"] {
+        height: 15px;
+        margin: 0 5px;
+        vertical-align: -0.2em;
+        width: 15px;
+    }
+
     label {
         margin: 10px 0 20px;
     }
 
     label input {
         margin: 8px 0 0;
-    }
-
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    table thead {
-        border-bottom: 1px solid #c0c0c0;
-    }
-
-    table tbody td {
-        height: 50px;
-    }
-
-    table tbody td.center {
-        text-align: center;
-    }
-
-    table tbody tr {
-        border-bottom: 1px solid #d4d4d4;
-    }
-
-    table tbody tr:nth-child(even) {
-        background: #eaf5fb;
-    }
-
-    table tbody tr td:first-child {
-        padding-right: 25px;
     }
 
     #app {
