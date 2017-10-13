@@ -38,6 +38,8 @@
     import axios from 'axios'
     import debounce from 'lodash.debounce'
 
+    import config from '../config.js'
+
     import PlayerModal from './PlayerModal.vue'
     import PlayerTable from './PlayerTable.vue'
 
@@ -58,7 +60,7 @@
                 player_query: '',
                 query_results: [],
                 show_compared_players: false,
-                sheets_url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTB4kT0ZieKcXJXRdB1WeZBL2izq32MKu_Jvg5lGODqWlm1zzDGxOarnXXmEGnZvoRj3eNWecAyh8IN/pub?gid=0&single=true&output=csv'
+                sheets_url: config.sheets_url
             }
         },
 
